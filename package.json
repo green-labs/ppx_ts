@@ -1,0 +1,22 @@
+{
+  "name": "@greenlabs/ppx_ts",
+  "version": "0.1.0",
+  "description": "ReScript PPX helps binding to typescript modules",
+  "license": "MIT",
+  "author": "Greenlabs Dev <developer@greenlabs.co.kr>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/green-labs/ppx_ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/green-labs/ppx_ts/issues"
+  },
+  "keywords": [
+    "ReScript",
+    "ppx",
+    "typescript"
+  ],
+  "scripts": {
+    "postinstall": "node ./postInstall.js"
+  }
+}

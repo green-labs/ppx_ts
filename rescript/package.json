@@ -1,0 +1,18 @@
+{
+  "name": "ppx_ts-test",
+  "version": "0.0.1",
+  "description": "Test ppx_ts",
+  "license": "MIT",
+  "devDependencies": {
+    "@glennsl/bs-jest": "^0.7.0",
+    "jest": "^27.3.1",
+    "rescript": "^9.1.4"
+  },
+  "scripts": {
+    "res:build": "rescript",
+    "res:clean": "rescript clean",
+    "res:watch": "rescript build -w",
+    "test": "jest",
+    "test:watch": "jest --watchAll"
+  }
+}

@@ -1,0 +1,5 @@
+(executable
+ (package ppx_ts)
+ (name bin)
+ (public_name ppx_ts)
+ (libraries ppx_ts))

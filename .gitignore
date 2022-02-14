@@ -1,0 +1,11 @@
+.DS_Store
+.idea
+*.log
+tmp/
+
+lib
+.merlin
+node_modules
+_build
+.bsb.lock
+ppx_ts.install

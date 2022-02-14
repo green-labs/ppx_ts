@@ -1,0 +1,9 @@
+(library
+ (name ppx_ts)
+ (public_name ppx_ts)
+ (kind ppx_deriver)
+ (libraries core ppxlib str)
+ (flags
+  (:standard -w -9))
+ (preprocess
+  (pps ppxlib.metaquot ppx_inline_test ppx_expect ppx_deriving.show)))
