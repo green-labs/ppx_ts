@@ -6,9 +6,9 @@ open Ast_helper
 let attribute_name = "ppx_ts"
 
 type attribute_kind =
-  | KeyOf of string
-  | SetType of string
-  | ToGeneric of string
+  | KeyOf of string * payload
+  | SetType of string * payload
+  | ToGeneric of string * payload
 
 let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
@@ -32,11 +32,11 @@ let get_attribute_by_name attributes name =
   | [ attribute ] -> Ok (Some attribute)
   | _ -> Error ("Too many occurrences of \"" ^ name ^ "\" attribute")
 
-let parse_attribute { attr_name = { Location.txt } } =
+let parse_attribute { attr_name = { Location.txt }; attr_payload } =
   if txt = mk_attr_with_suffix attribute_name suffix_key_of then
-    Some (KeyOf suffix_key_of)
+    Some (KeyOf (suffix_key_of, attr_payload))
   else if txt = mk_attr_with_suffix attribute_name suffix_set_type then
-    Some (SetType suffix_set_type)
+    Some (SetType (suffix_set_type, attr_payload))
   else if txt = mk_attr_with_suffix attribute_name suffix_to_generic then
-    Some (ToGeneric suffix_to_generic)
+    Some (ToGeneric (suffix_to_generic, attr_payload))
   else None

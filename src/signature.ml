@@ -8,6 +8,11 @@ let make_const_decls labels loc =
   |> List.map (fun label -> String.capitalize_ascii label)
   |> List.map (fun label -> Type.constructor ~loc (mkloc label loc))
 
+let make_label_decls labels loc lid =
+  labels
+  |> List.map (fun label ->
+         Type.field ~loc (mkloc label loc) (Typ.constr lid []))
+
 (* keyOf attribute mapper *)
 let make_signature_item_key_of name loc manifest kind suffix =
   match (manifest, kind) with
@@ -29,10 +34,13 @@ let make_signature_item_key_of name loc manifest kind suffix =
   | _ -> fail loc "This type is not handled by ppx_ts"
 
 (* setType attribute mapper *)
-let make_signature_item_set_type name loc manifest kind suffix =
-  match (manifest, kind) with
-  | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
-  | None, Ptype_record decls ->
+let make_signature_item_set_type name loc manifest kind suffix payload =
+  match (manifest, kind, payload) with
+  | None, Ptype_abstract, _ -> fail loc "Can't handle the unspecified type"
+  | ( None,
+      Ptype_record decls,
+      PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_ident lid }, _) } ] )
+    ->
       let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
       let decls =
         [
@@ -41,7 +49,7 @@ let make_signature_item_set_type name loc manifest kind suffix =
               Type.mk
                 (mkloc (name ^ "_" ^ suffix) loc)
                 ~priv:Public
-                ~kind:(Ptype_variant (make_const_decls keys loc));
+                ~kind:(Ptype_record (make_label_decls keys loc lid));
             ];
         ]
       in
@@ -82,13 +90,13 @@ let map_type_decl decl =
   ptype_attributes |> List.map parse_attribute
   |> List.map (fun attribute ->
          match attribute with
-         | Some (KeyOf suffix) ->
+         | Some (KeyOf (suffix, _)) ->
              make_signature_item_key_of type_name ptype_loc ptype_manifest
                ptype_kind suffix
-         | Some (SetType suffix) ->
+         | Some (SetType (suffix, payload)) ->
              make_signature_item_set_type type_name ptype_loc ptype_manifest
-               ptype_kind suffix
-         | Some (ToGeneric suffix) ->
+               ptype_kind suffix payload
+         | Some (ToGeneric (suffix, _)) ->
              make_signature_item_to_generic type_name ptype_loc ptype_manifest
                ptype_kind suffix
          | None -> [])
