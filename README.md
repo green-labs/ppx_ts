@@ -2,10 +2,10 @@
 
 ## Features
 
-### `keyof`
+### `keyOf`
 
 ```rescript
-@ppx_ts
+@ppx_ts.keyOf
 type t = {
   name: string,
   age: int
@@ -15,3 +15,21 @@ type t = {
 type t_keyof = NAME | AGE
 ```
 
+### `setType(t)`
+
+```rescript
+module Error = {
+  type t
+}
+@ppx_ts.setType(Error.t)
+type t = {
+  name: string,
+  age: int
+}
+
+// automatically generated
+type t_setType = {
+  name: Error.t
+  age: Error.t
+}
+```
