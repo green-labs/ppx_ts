@@ -5,7 +5,7 @@ open Utils
 
 let make_const_decls labels loc =
   labels
-  |> List.map (fun label -> String.uppercase_ascii label)
+  |> List.map (fun label -> String.capitalize_ascii label)
   |> List.map (fun label -> Type.constructor ~loc (mkloc label loc))
 
 let map_type_decl decl =
