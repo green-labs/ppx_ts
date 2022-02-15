@@ -8,6 +8,69 @@ let make_const_decls labels loc =
   |> List.map (fun label -> String.capitalize_ascii label)
   |> List.map (fun label -> Type.constructor ~loc (mkloc label loc))
 
+(* keyOf attribute mapper *)
+let make_structure_item_key_of name loc manifest kind suffix =
+  match (manifest, kind) with
+  (* type t *)
+  | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
+  | None, Ptype_record decls ->
+      let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
+      let decls =
+        [
+          Str.type_ Recursive
+            [
+              Type.mk
+                (mkloc (name ^ "_" ^ suffix) loc)
+                ~priv:Public
+                ~kind:(Ptype_variant (make_const_decls keys loc));
+            ];
+        ]
+      in
+      decls
+  | _ -> fail loc "This type is not handled by ppx_ts"
+
+(* setType attribute mapper *)
+let make_structure_item_set_type name loc manifest kind suffix =
+  match (manifest, kind) with
+  (* type t *)
+  | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
+  | None, Ptype_record decls ->
+      let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
+      let decls =
+        [
+          Str.type_ Recursive
+            [
+              Type.mk
+                (mkloc (name ^ "_" ^ suffix) loc)
+                ~priv:Public
+                ~kind:(Ptype_variant (make_const_decls keys loc));
+            ];
+        ]
+      in
+      decls
+  | _ -> fail loc "This type is not handled by ppx_ts"
+
+(* toGeneric attribute mapper *)
+let make_structure_item_to_generic name loc manifest kind suffix =
+  match (manifest, kind) with
+  (* type t *)
+  | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
+  | None, Ptype_record decls ->
+      let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
+      let decls =
+        [
+          Str.type_ Recursive
+            [
+              Type.mk
+                (mkloc (name ^ "_" ^ suffix) loc)
+                ~priv:Public
+                ~kind:(Ptype_variant (make_const_decls keys loc));
+            ];
+        ]
+      in
+      decls
+  | _ -> fail loc "This type is not handled by ppx_ts"
+
 let map_type_decl decl =
   let {
     ptype_attributes;
@@ -18,30 +81,21 @@ let map_type_decl decl =
   } =
     decl
   in
-  (* check attributes here whether 'keyof', 'toGeneric', ... *)
-  let _attribute =
-    get_attribute_by_name ptype_attributes
-      (attribute_name ^ attribute_name_keyof)
-  in
-
-  match (ptype_manifest, ptype_kind) with
-  (* type t *)
-  | None, Ptype_abstract -> fail ptype_loc "Can't handle the unspecified type"
-  | None, Ptype_record decls ->
-      let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
-      let decls =
-        [
-          Str.type_ Recursive
-            [
-              Type.mk
-                (mkloc (type_name ^ "_keyof") ptype_loc)
-                ~priv:Public
-                ~kind:(Ptype_variant (make_const_decls keys ptype_loc));
-            ];
-        ]
-      in
-      decls
-  | _ -> fail ptype_loc "This type is not handled by ppx_ts"
+  (* attributes -> structure_item list list -> structure_item list *)
+  ptype_attributes |> List.map parse_attribute
+  |> List.map (fun attribute ->
+         match attribute with
+         | Some (KeyOf suffix) ->
+             make_structure_item_key_of type_name ptype_loc ptype_manifest
+               ptype_kind suffix
+         | Some (SetType suffix) ->
+             make_structure_item_set_type type_name ptype_loc ptype_manifest
+               ptype_kind suffix
+         | Some (ToGeneric suffix) ->
+             make_structure_item_to_generic type_name ptype_loc ptype_manifest
+               ptype_kind suffix
+         | None -> [])
+  |> List.concat
 
 let map_structure_item mapper ({ pstr_desc } as structure_item) =
   match pstr_desc with
