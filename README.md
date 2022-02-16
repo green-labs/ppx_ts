@@ -34,6 +34,22 @@ type t_setType = {
 }
 ```
 
+### `toGeneric`
+
+```rescript
+@ppx_ts.toGeneric
+type t = {
+  name: string,
+  age: int
+}
+
+// automatically generated
+type t_toGeneric<'a> = {
+  name: 'a
+  age: 'a
+}
+```
+
 ### `partial`
 
 ```rescript

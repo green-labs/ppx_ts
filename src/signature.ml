@@ -10,13 +10,13 @@ let make_const_decls labels loc =
   |> List.map (fun label -> Type.constructor ~loc (mkloc label loc))
 
 (* make label_declaration with new type constructor using lid *)
-let make_label_decls_with_lid ?(is_option = false) labels loc lid =
-  labels
-  |> List.map (fun label ->
-         Type.field ~loc (mkloc label loc)
+let make_label_decls_with_core_type ?(is_option = false) decls core_type =
+  decls
+  |> List.map (fun { pld_name; pld_loc } ->
+         Type.field ~loc:pld_loc pld_name
            (match is_option with
-           | true -> Typ.constr (Utils.lid "option") [ Typ.constr lid [] ]
-           | false -> Typ.constr lid []))
+           | true -> Typ.constr (Utils.lid "option") [ core_type ]
+           | false -> core_type))
 
 (* make label_declaration with is_option flag *)
 let make_label_decls ?(is_option = false) decls =
@@ -55,7 +55,7 @@ let make_signature_item_set_type name loc manifest kind suffix payload =
       Ptype_record decls,
       PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_ident lid }, _) } ] )
     ->
-      let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
+      let new_pld_type = Typ.constr lid [] in
       let decls =
         [
           Sig.type_ Recursive
@@ -63,7 +63,9 @@ let make_signature_item_set_type name loc manifest kind suffix payload =
               Type.mk
                 (mkloc (name ^ "_" ^ suffix) loc)
                 ~priv:Public
-                ~kind:(Ptype_record (make_label_decls_with_lid keys loc lid));
+                ~kind:
+                  (Ptype_record
+                     (make_label_decls_with_core_type decls new_pld_type));
             ];
         ]
       in
@@ -75,7 +77,8 @@ let make_signature_item_to_generic name loc manifest kind suffix =
   match (manifest, kind) with
   | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
   | None, Ptype_record decls ->
-      let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
+      (* type param label *)
+      let type_param = Typ.var "a" in
       let decls =
         [
           Sig.type_ Recursive
@@ -83,7 +86,10 @@ let make_signature_item_to_generic name loc manifest kind suffix =
               Type.mk
                 (mkloc (name ^ "_" ^ suffix) loc)
                 ~priv:Public
-                ~kind:(Ptype_variant (make_const_decls keys loc));
+                ~params:[ (type_param, (NoVariance, NoInjectivity)) ]
+                ~kind:
+                  (Ptype_record
+                     (make_label_decls_with_core_type decls type_param));
             ];
         ]
       in
