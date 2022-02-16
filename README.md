@@ -96,7 +96,7 @@ type t_partial = {
 1. Create a sandbox with opam
 
 ```
-opam switch create tailwindcss 4.12.1
+opam switch create ppx_ts 4.12.1
 ```
 
 2. Install dependencies
