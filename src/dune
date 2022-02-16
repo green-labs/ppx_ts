@@ -2,7 +2,7 @@
  (name ppx_ts)
  (public_name ppx_ts)
  (kind ppx_deriver)
- (libraries core ppxlib str)
+ (libraries ppxlib str)
  (flags
   (:standard -w -9))
  (preprocess

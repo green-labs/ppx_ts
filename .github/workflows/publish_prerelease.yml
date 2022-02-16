@@ -1,0 +1,126 @@
+name: Publish Pre-release to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'change npm release version'
+        required: true 
+        default: ''
+
+jobs:
+  build_linux:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        ocaml-compiler:
+          - 4.12.1
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use OCaml ${{ matrix.ocaml-compiler}}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+
+      - name: Install deps
+        run: opam install . --deps-only --with-test
+
+      - name: Build
+        run: opam exec -- dune build
+
+      - name: Copy built PPX file
+        run: |
+          mv ./_build/default/bin/bin.exe ppx.exe
+
+      - name: (only on release) Upload artifacts ${{ matrix.os }}
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ matrix.os }}
+          path: ppx.exe
+          if-no-files-found: error
+
+  build_macos:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macOS-latest]
+        ocaml-compiler:
+          - 4.12.1
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use OCaml ${{ matrix.ocaml-compiler}}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+
+      - name: Install deps
+        run: opam install . --deps-only --with-test
+
+      - name: Build
+        run: opam exec -- dune build
+
+      - name: Copy built PPX file
+        run: |
+          mv ./_build/default/bin/bin.exe ppx.exe
+
+      - name: (only on release) Upload artifacts ${{ matrix.os }}
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ matrix.os }}
+          path: ppx.exe
+          if-no-files-found: error
+
+  publish:
+    needs: [build_linux, build_macos]
+    name: (only on release) Publish
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Download linux artifacts
+        if: success()
+        uses: actions/download-artifact@master
+        with:
+          name: ubuntu-18.04
+          path: binaries/linux
+
+      - name: Download macOS artifacts
+        if: success()
+        uses: actions/download-artifact@master
+        with:
+          name: macOS-latest
+          path: binaries/darwin
+
+      - name: Move artifacts
+        if: success()
+        run: |
+          mkdir -p bin
+          mv binaries/linux/ppx.exe ppx-linux.exe
+          mv binaries/darwin/ppx.exe ppx-osx.exe
+
+      - name: Change npm release version
+        if: success()
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: ${{ github.event.inputs.release_version }}
+
+      - name: Pack package
+        if: success()
+        run: npm pack
+
+      - name: Publish
+        if: success()
+        run: npm publish greenlabs-ppx-ts-${{ github.event.inputs.release_version }}.tgz --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

@@ -1,0 +1,24 @@
+opam-version: "2.0"
+name: "ppx_ts"
+version: "0.1.0"
+synopsis: "PPX helps binding to typescript modules"
+description: """
+ppx_ts helps binding to typescript module.
+"""
+maintainer: "Greenlabs Dev <developer@greenlabs.co.kr>"
+authors: "Greenlabs Dev <developer@greenlabs.co.kr>"
+license: "MIT"
+homepage: "https://github.com/green-labs/ppx_ts"
+bug-reports: "https://github.com/green-labs/ppx_ts/issues"
+dev-repo: "git+https://github.com/green-labs/ppx_ts.git"
+depends: [
+  "ocaml" {>= "4.12.1"}
+  "dune" { >= "2.8"}
+  "ppxlib"
+  "ppx_inline_test"
+  "ppx_expect"
+  "ppx_deriving"
+]
+build: [
+  ["dune" "build" "-p" name "-j" jobs]
+]

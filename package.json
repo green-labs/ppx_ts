@@ -1,5 +1,5 @@
 {
-  "name": "@greenlabs/ppx_ts",
+  "name": "@greenlabs/ppx-ts",
   "version": "0.1.0",
   "description": "ReScript PPX helps binding to typescript modules",
   "license": "MIT",
