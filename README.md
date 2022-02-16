@@ -33,3 +33,19 @@ type t_setType = {
   age: Error.t
 }
 ```
+
+### `partial`
+
+```rescript
+@ppx_ts.partial
+type t = {
+  name: string,
+  age: int
+}
+
+// automatically generated
+type t_partial = {
+  name: option<string>,
+  age: option<int>
+}
+```

@@ -3,15 +3,31 @@ open Parsetree
 open Ast_helper
 open Utils
 
+(* make constructor declaration with label *)
 let make_const_decls labels loc =
   labels
   |> List.map (fun label -> String.capitalize_ascii label)
   |> List.map (fun label -> Type.constructor ~loc (mkloc label loc))
 
-let make_label_decls labels loc lid =
+(* make label_declaration with new type constructor using lid *)
+let make_label_decls_with_lid ?(is_option = false) labels loc lid =
+  let core_type_list =
+    match is_option with
+    | true -> [ Typ.constr (Utils.lid "option") [] ]
+    | false -> []
+  in
   labels
   |> List.map (fun label ->
-         Type.field ~loc (mkloc label loc) (Typ.constr lid []))
+         Type.field ~loc (mkloc label loc) (Typ.constr lid core_type_list))
+
+(* make label_declaration with is_option flag *)
+let make_label_decls ?(is_option = false) decls =
+  decls
+  |> List.map (fun { pld_name; pld_type; pld_loc } ->
+         Type.field ~loc:pld_loc pld_name
+           (match is_option with
+           | true -> Typ.constr (Utils.lid "option") [ pld_type ]
+           | false -> pld_type))
 
 (* keyOf attribute mapper *)
 let make_structure_item_key_of name loc manifest kind suffix =
@@ -51,7 +67,7 @@ let make_structure_item_set_type name loc manifest kind suffix payload =
               Type.mk
                 (mkloc (name ^ "_" ^ suffix) loc)
                 ~priv:Public
-                ~kind:(Ptype_record (make_label_decls keys loc lid));
+                ~kind:(Ptype_record (make_label_decls_with_lid keys loc lid));
             ];
         ]
       in
@@ -79,6 +95,26 @@ let make_structure_item_to_generic name loc manifest kind suffix =
       decls
   | _ -> fail loc "This type is not handled by @ppx_ts.toGeneric"
 
+(* partial attribute mapper *)
+let make_structure_item_partial name loc manifest kind suffix =
+  match (manifest, kind) with
+  (* type t *)
+  | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
+  | None, Ptype_record decls ->
+      let decls =
+        [
+          Str.type_ Recursive
+            [
+              Type.mk
+                (mkloc (name ^ "_" ^ suffix) loc)
+                ~priv:Public
+                ~kind:(Ptype_record (make_label_decls ~is_option:true decls));
+            ];
+        ]
+      in
+      decls
+  | _ -> fail loc "This type is not handled by @ppx_ts.partial"
+
 let map_type_decl decl =
   let {
     ptype_attributes;
@@ -101,6 +137,9 @@ let map_type_decl decl =
                ptype_kind suffix payload
          | Some (ToGeneric (suffix, _)) ->
              make_structure_item_to_generic type_name ptype_loc ptype_manifest
+               ptype_kind suffix
+         | Some (Partial (suffix, _)) ->
+             make_structure_item_partial type_name ptype_loc ptype_manifest
                ptype_kind suffix
          | None -> [])
   |> List.concat
