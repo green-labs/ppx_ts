@@ -1,8 +1,26 @@
 # PPX_ts
 
+`ppx_ts` is a ReScript preprocessor, which helps generating helper types to bind to typescript modules.
+
+## Install
+
+```rescript
+yarn add -D @greenlabs/ppx_ts
+```
+
+```rescript
+// bsconfig.json
+"ppx-flags": [
+  ...,
+  "@greenlabs/ppx_ts/ppx"
+],
+```
+
 ## Features
 
-### `keyOf`
+### Attributes `@`
+
+#### `keyOf`
 
 ```rescript
 @ppx_ts.keyOf
@@ -12,7 +30,7 @@ type t = {
 }
 
 // automatically generated
-type t_keyof = Name | Age
+type t_keyOf = Name | Age
 
 // automatically generated
 let t_keyToString = key =>
@@ -22,7 +40,7 @@ let t_keyToString = key =>
   }
 ```
 
-### `setType(t)`
+#### `setType(t)`
 
 ```rescript
 module Error = {
@@ -41,7 +59,7 @@ type t_setType = {
 }
 ```
 
-### `toGeneric`
+#### `toGeneric`
 
 ```rescript
 @ppx_ts.toGeneric
@@ -57,7 +75,7 @@ type t_toGeneric<'a> = {
 }
 ```
 
-### `partial`
+#### `partial`
 
 ```rescript
 @ppx_ts.partial
@@ -71,4 +89,39 @@ type t_partial = {
   name: option<string>,
   age: option<int>
 }
+```
+
+## Contribution
+
+1. Create a sandbox with opam
+
+```
+opam switch create tailwindcss 4.12.1
+```
+
+2. Install dependencies
+
+```
+opam install . --deps-only --with-test
+```
+
+3. Build
+
+```
+opam exec -- dune build
+```
+
+4. Test
+
+```
+cd rescript
+
+(install dependencies)
+yarn
+
+(build --watch)
+yarn res:clean && yarn res:watch
+
+(run test --watch)
+yarn test:watch
 ```
