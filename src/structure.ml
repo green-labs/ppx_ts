@@ -58,7 +58,7 @@ let make_structure_item_key_of name loc manifest kind suffix =
                                   (Utils.lid (String.capitalize_ascii key))
                                   None)
                                (Exp.constant
-                                  (Const.string (String.capitalize_ascii key))))
+                                  (Const.string key)))
                       )));
             ];
         ]
