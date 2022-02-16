@@ -11,14 +11,12 @@ let make_const_decls labels loc =
 
 (* make label_declaration with new type constructor using lid *)
 let make_label_decls_with_lid ?(is_option = false) labels loc lid =
-  let core_type_list =
-    match is_option with
-    | true -> [ Typ.constr (Utils.lid "option") [] ]
-    | false -> []
-  in
   labels
   |> List.map (fun label ->
-         Type.field ~loc (mkloc label loc) (Typ.constr lid core_type_list))
+         Type.field ~loc (mkloc label loc)
+           (match is_option with
+           | true -> Typ.constr (Utils.lid "option") [ Typ.constr lid [] ]
+           | false -> Typ.constr lid []))
 
 (* make label_declaration with is_option flag *)
 let make_label_decls ?(is_option = false) decls =
