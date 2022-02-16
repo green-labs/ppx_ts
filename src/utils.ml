@@ -15,6 +15,7 @@ let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
 let suffix_to_generic = "toGeneric"
 let suffix_partial = "partial"
+let suffix_key_to_string = "keyToString"
 
 (* make attribute name to suffix string *)
 let mk_attr_with_suffix attr_name suffix = attr_name ^ "." ^ suffix

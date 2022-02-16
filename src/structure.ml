@@ -9,6 +9,13 @@ let make_const_decls labels loc =
   |> List.map (fun label -> String.capitalize_ascii label)
   |> List.map (fun label -> Type.constructor ~loc (mkloc label loc))
 
+let make_match_case labels =
+  labels
+  |> List.map (fun key ->
+         Exp.case
+           (Pat.construct (Utils.lid (String.capitalize_ascii key)) None)
+           (Exp.constant (Const.string key)))
+
 (* make label_declaration with new type constructor using lid *)
 let make_label_decls_with_core_type ?(is_option = false) decls core_type =
   decls
@@ -46,20 +53,12 @@ let make_structure_item_key_of name loc manifest kind suffix =
           Str.value Nonrecursive
             [
               Vb.mk
-                (Pat.var (mknoloc @@ name ^ "_keyToString"))
+                (Pat.var (mknoloc @@ name ^ "_" ^ suffix_key_to_string))
                 (Exp.fun_ Nolabel None
                    (Pat.var (mknoloc "key"))
                    (Exp.match_
                       (Exp.ident (Utils.lid "key"))
-                      (keys
-                      |> List.map (fun key ->
-                             Exp.case
-                               (Pat.construct
-                                  (Utils.lid (String.capitalize_ascii key))
-                                  None)
-                               (Exp.constant
-                                  (Const.string key)))
-                      )));
+                      (make_match_case keys)));
             ];
         ]
       in

@@ -44,7 +44,7 @@ let make_signature_item_key_of name loc manifest kind suffix =
           Sig.type_ Recursive
             [
               Type.mk
-                (mkloc (name ^ "_keyToString") loc)
+                (mkloc (name ^ "_" ^ suffix_key_to_string) loc)
                 ?manifest:
                   (Some
                      (Typ.arrow Nolabel
