@@ -7,3 +7,5 @@ type t = {
   name: string,
   age: int,
 }
+
+let value = t_keyToString(Name)

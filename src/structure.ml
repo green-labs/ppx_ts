@@ -43,6 +43,24 @@ let make_structure_item_key_of name loc manifest kind suffix =
                 ~priv:Public
                 ~kind:(Ptype_variant (make_const_decls keys loc));
             ];
+          Str.value Nonrecursive
+            [
+              Vb.mk
+                (Pat.var (mknoloc @@ name ^ "_keyToString"))
+                (Exp.fun_ Nolabel None
+                   (Pat.var (mknoloc "key"))
+                   (Exp.match_
+                      (Exp.ident (Utils.lid "key"))
+                      (keys
+                      |> List.map (fun key ->
+                             Exp.case
+                               (Pat.construct
+                                  (Utils.lid (String.capitalize_ascii key))
+                                  None)
+                               (Exp.constant
+                                  (Const.string (String.capitalize_ascii key))))
+                      )));
+            ];
         ]
       in
       decls

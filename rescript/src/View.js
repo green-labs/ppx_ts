@@ -4,5 +4,17 @@
 
 var $$Error = {};
 
+function t_keyToString(key) {
+  if (key) {
+    return "Age";
+  } else {
+    return "Name";
+  }
+}
+
+var value = "Name";
+
 exports.$$Error = $$Error;
+exports.t_keyToString = t_keyToString;
+exports.value = value;
 /* No side effect */

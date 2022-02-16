@@ -39,8 +39,17 @@ let make_signature_item_key_of name loc manifest kind suffix =
             [
               Type.mk
                 (mkloc (name ^ "_" ^ suffix) loc)
-                ~priv:Public
                 ~kind:(Ptype_variant (make_const_decls keys loc));
+            ];
+          Sig.type_ Recursive
+            [
+              Type.mk
+                (mkloc (name ^ "_keyToString") loc)
+                ?manifest:
+                  (Some
+                     (Typ.arrow Nolabel
+                        (Typ.constr (Utils.lid (name ^ "_" ^ suffix)) [])
+                        (Typ.constr (Utils.lid "string") [])));
             ];
         ]
       in

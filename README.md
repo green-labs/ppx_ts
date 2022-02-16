@@ -12,7 +12,14 @@ type t = {
 }
 
 // automatically generated
-type t_keyof = NAME | AGE
+type t_keyof = Name | Age
+
+// automatically generated
+let t_keyToString = key =>
+  switch key {
+  | Name => "name"
+  | Age => "age"
+  }
 ```
 
 ### `setType(t)`
