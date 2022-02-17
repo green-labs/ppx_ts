@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "ppx_ts"
-version: "0.1.0"
+version: "0.1.2"
 synopsis: "PPX helps binding to typescript modules"
 description: """
 ppx_ts helps binding to typescript module.
