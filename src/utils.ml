@@ -1,6 +1,5 @@
 open Ppxlib
-
-(* open Parsetree *)
+open Parsetree
 open Ast_helper
 
 let attribute_name = "ppx_ts"
@@ -45,3 +44,34 @@ let parse_attribute { attr_name = { Location.txt }; attr_payload } =
   else if txt = mk_attr_with_suffix attribute_name suffix_partial then
     Some (Partial (suffix_partial, attr_payload))
   else None
+
+(* make constructor declaration with label *)
+let make_const_decls labels loc =
+  labels
+  |> List.map (fun label -> String.capitalize_ascii label)
+  |> List.map (fun label -> Type.constructor ~loc (mkloc label loc))
+
+let make_match_case labels =
+  labels
+  |> List.map (fun key ->
+         Exp.case
+           (Pat.construct (lid (String.capitalize_ascii key)) None)
+           (Exp.constant (Const.string key)))
+
+(* make label_declaration with new type constructor using lid *)
+let make_label_decls_with_core_type ?(is_option = false) decls core_type =
+  decls
+  |> List.map (fun { pld_name; pld_loc } ->
+         Type.field ~loc:pld_loc pld_name
+           (match is_option with
+           | true -> Typ.constr (lid "option") [ core_type ]
+           | false -> core_type))
+
+(* make label_declaration with is_option flag *)
+let make_label_decls ?(is_option = false) decls =
+  decls
+  |> List.map (fun { pld_name; pld_type; pld_loc } ->
+         Type.field ~loc:pld_loc pld_name
+           (match is_option with
+           | true -> Typ.constr (lid "option") [ pld_type ]
+           | false -> pld_type))
