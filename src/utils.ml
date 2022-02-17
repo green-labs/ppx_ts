@@ -10,12 +10,14 @@ type attribute_kind =
   | ToGeneric of string * payload
   | Partial of string * payload
   | Pick of string * payload
+  | Omit of string * payload
 
 let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
 let suffix_to_generic = "toGeneric"
 let suffix_partial = "partial"
 let suffix_pick = "pick"
+let suffix_omit = "omit"
 let suffix_key_to_string = "keyToString"
 
 (* make attribute name to suffix string *)
@@ -55,6 +57,8 @@ let parse_attribute { attr_name = { Location.txt }; attr_payload } =
     Some (Partial (suffix_partial, attr_payload))
   else if txt = mk_attr_with_suffix attribute_name suffix_pick then
     Some (Pick (suffix_pick, attr_payload))
+  else if txt = mk_attr_with_suffix attribute_name suffix_omit then
+    Some (Omit (suffix_omit, attr_payload))
   else None
 
 (* make constructor declaration with label *)
@@ -80,11 +84,17 @@ let make_label_decls_with_core_type ?(is_option = false) decls core_type =
            | false -> core_type))
 
 (* make label_declaration with labels *)
-let make_label_decls_with_labels ?(is_option = false) decls labels =
+let make_label_decls_with_labels ?(is_option = false) ?(is_omit = false) decls
+    labels =
   let matched_decls =
-    decls
-    |> List.filter (fun { pld_name = { Location.txt } } ->
-           labels |> List.exists (fun label -> label = txt))
+    if is_omit then
+      decls
+      |> List.filter (fun { pld_name = { Location.txt } } ->
+             labels |> List.exists (fun label -> label <> txt))
+    else
+      decls
+      |> List.filter (fun { pld_name = { Location.txt } } ->
+             labels |> List.exists (fun label -> label = txt))
   in
   matched_decls
   |> List.map (fun { pld_name; pld_loc; pld_type } ->

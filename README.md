@@ -106,6 +106,21 @@ type t_pick_name = {
 }
 ```
 
+#### `omit`
+
+```rescript
+@ppx_ts.omit(["name"])
+type t = {
+  name: string,
+  age: int
+}
+
+// automatically generated
+type t_omit_name = {
+  age: int,
+}
+```
+
 ## Contribution
 
 1. Create a sandbox with opam
