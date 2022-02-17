@@ -9,11 +9,13 @@ type attribute_kind =
   | SetType of string * payload
   | ToGeneric of string * payload
   | Partial of string * payload
+  | Pick of string * payload
 
 let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
 let suffix_to_generic = "toGeneric"
 let suffix_partial = "partial"
+let suffix_pick = "pick"
 let suffix_key_to_string = "keyToString"
 
 (* make attribute name to suffix string *)
@@ -34,6 +36,14 @@ let get_attribute_by_name attributes name =
   | [ attribute ] -> Ok (Some attribute)
   | _ -> Error ("Too many occurrences of \"" ^ name ^ "\" attribute")
 
+let get_expression_from_payload payload =
+  match payload with
+  | PStr [ { pstr_desc } ] -> (
+      match pstr_desc with
+      | Pstr_eval (expr, _) -> expr
+      | _ -> fail loc "Expected expression as attribute payload")
+  | _ -> fail loc "Expected expression as attribute payload"
+
 let parse_attribute { attr_name = { Location.txt }; attr_payload } =
   if txt = mk_attr_with_suffix attribute_name suffix_key_of then
     Some (KeyOf (suffix_key_of, attr_payload))
@@ -43,6 +53,8 @@ let parse_attribute { attr_name = { Location.txt }; attr_payload } =
     Some (ToGeneric (suffix_to_generic, attr_payload))
   else if txt = mk_attr_with_suffix attribute_name suffix_partial then
     Some (Partial (suffix_partial, attr_payload))
+  else if txt = mk_attr_with_suffix attribute_name suffix_pick then
+    Some (Pick (suffix_pick, attr_payload))
   else None
 
 (* make constructor declaration with label *)
@@ -66,6 +78,20 @@ let make_label_decls_with_core_type ?(is_option = false) decls core_type =
            (match is_option with
            | true -> Typ.constr (lid "option") [ core_type ]
            | false -> core_type))
+
+(* make label_declaration with labels *)
+let make_label_decls_with_labels ?(is_option = false) decls labels =
+  let matched_decls =
+    decls
+    |> List.filter (fun { pld_name = { Location.txt } } ->
+           labels |> List.exists (fun label -> label = txt))
+  in
+  matched_decls
+  |> List.map (fun { pld_name; pld_loc; pld_type } ->
+         Type.field ~loc:pld_loc pld_name
+           (match is_option with
+           | true -> Typ.constr (lid "option") [ pld_type ]
+           | false -> pld_type))
 
 (* make label_declaration with is_option flag *)
 let make_label_decls ?(is_option = false) decls =

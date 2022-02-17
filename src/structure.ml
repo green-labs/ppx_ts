@@ -28,6 +28,9 @@ let map_type_decl decl =
          | Some (Partial (suffix, _)) ->
              Str_partial.make_structure_item type_name ptype_loc ptype_manifest
                ptype_kind suffix
+         | Some (Pick (suffix, payload)) ->
+             Str_pick.make_structure_item type_name ptype_loc
+               ptype_manifest ptype_kind suffix payload
          | None -> [])
   |> List.concat
 

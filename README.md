@@ -91,6 +91,21 @@ type t_partial = {
 }
 ```
 
+#### `pick`
+
+```rescript
+@ppx_ts.pick(["name"])
+type t = {
+  name: string,
+  age: int
+}
+
+// automatically generated
+type t_pick_name = {
+  name: string,
+}
+```
+
 ## Contribution
 
 1. Create a sandbox with opam

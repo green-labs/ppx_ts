@@ -6,13 +6,13 @@ var $$Error = {};
 
 function t_keyToString(key) {
   if (key) {
-    return "Age";
+    return "age";
   } else {
-    return "Name";
+    return "name";
   }
 }
 
-var value = "Name";
+var value = "name";
 
 exports.$$Error = $$Error;
 exports.t_keyToString = t_keyToString;
