@@ -14,7 +14,7 @@ let map_type_decl decl =
   in
   (* attributes -> structure_item list list -> structure_item list *)
   ptype_attributes |> List.map parse_attribute
-  |> List.map (fun attribute ->
+  |> List.map (fun (attribute : attribute_kind option) ->
          match attribute with
          | Some (KeyOf (suffix, _)) ->
              Sig_key_of.make_signature_item type_name ptype_loc ptype_manifest

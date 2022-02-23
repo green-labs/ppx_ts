@@ -121,6 +121,19 @@ type t_omit_name = {
 }
 ```
 
+### Extension `%`
+
+#### `keyOf`
+
+```rescript
+type t = {
+  name: string,
+  age: int
+}
+
+type t1 = %ppx_ts.keyOf(t) // type t1 = Name | Age
+```
+
 ## Contribution
 
 1. Create a sandbox with opam

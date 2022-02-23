@@ -8,7 +8,7 @@ class mapper =
       sign |> List.map (Signature.map_signature_item self) |> List.concat
 
     method! structure strt =
-      strt |> List.map (Structure.map_structure_item self) |> List.concat
+      strt |> List.map (Structure.map_structure_item self strt) |> List.concat
   end
 
 let signature_mapper = (new mapper)#signature

@@ -12,6 +12,14 @@ type attribute_kind =
   | Pick of string * payload
   | Omit of string * payload
 
+type extension_kind =
+  | KeyOf of string * string * payload
+  | SetType of string * string * payload
+  | ToGeneric of string * string * payload
+  | Partial of string * string * payload
+  | Pick of string * string * payload
+  | Omit of string * string * payload
+
 let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
 let suffix_to_generic = "toGeneric"
@@ -46,7 +54,8 @@ let get_expression_from_payload payload =
       | _ -> fail loc "Expected expression as attribute payload")
   | _ -> fail loc "Expected expression as attribute payload"
 
-let parse_attribute { attr_name = { Location.txt }; attr_payload } =
+let parse_attribute { attr_name = { Location.txt }; attr_payload } :
+    attribute_kind option =
   if txt = mk_attr_with_suffix attribute_name suffix_key_of then
     Some (KeyOf (suffix_key_of, attr_payload))
   else if txt = mk_attr_with_suffix attribute_name suffix_set_type then
@@ -60,6 +69,51 @@ let parse_attribute { attr_name = { Location.txt }; attr_payload } =
   else if txt = mk_attr_with_suffix attribute_name suffix_omit then
     Some (Omit (suffix_omit, attr_payload))
   else None
+
+let parse_extension { ptype_name; ptype_manifest } : extension_kind option =
+  match ptype_manifest with
+  | Some { ptyp_desc = Ptyp_extension ({ Location.txt }, payload) } ->
+      let type_name =
+        match get_expression_from_payload payload with
+        | { pexp_desc = Pexp_ident lid } -> (
+            match lid.txt with
+            | Lident name -> name
+            | _ -> fail lid.loc "Missing type identifier")
+        | _ -> fail Location.none "Missing type identifier"
+      in
+
+      if txt = mk_attr_with_suffix attribute_name suffix_key_of then
+        Some (KeyOf (ptype_name.txt, type_name, payload))
+      else if txt = mk_attr_with_suffix attribute_name suffix_set_type then
+        Some (SetType (ptype_name.txt, txt, payload))
+      else if txt = mk_attr_with_suffix attribute_name suffix_to_generic then
+        Some (ToGeneric (ptype_name.txt, txt, payload))
+      else if txt = mk_attr_with_suffix attribute_name suffix_partial then
+        Some (Partial (ptype_name.txt, txt, payload))
+      else if txt = mk_attr_with_suffix attribute_name suffix_pick then
+        Some (Pick (ptype_name.txt, txt, payload))
+      else if txt = mk_attr_with_suffix attribute_name suffix_omit then
+        Some (Omit (ptype_name.txt, txt, payload))
+      else None
+  | _ -> None
+
+let get_type_decl_by_name structure name =
+  let matched_decls =
+    structure
+    |> List.filter_map (fun { pstr_desc } ->
+           match pstr_desc with
+           | Pstr_type (_, decls) -> (
+               let matched_decl =
+                 decls
+                 |> List.filter (fun { ptype_name = { Location.txt } } ->
+                        txt = name)
+               in
+               match matched_decl with
+               | [] -> None
+               | [ decl ] | decl :: _ -> Some decl)
+           | _ -> None)
+  in
+  match matched_decls with [] -> None | [ decl ] | decl :: _ -> Some decl
 
 (* make constructor declaration with label *)
 let make_const_decls labels loc =
