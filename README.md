@@ -121,6 +121,44 @@ type t_omit_name = {
 }
 ```
 
+### Extension `%`
+
+#### `keyOf`
+
+```rescript
+module Error = {
+  type t = {
+    name: string,
+    age: int
+  }
+}
+
+type t1 = %ppx_ts.keyOf(Error.t) // type t1 = Name | Age
+
+// automatically generated
+let t1_keyToString = key =>
+  switch key {
+  | Name => "name"
+  | Age => "age"
+  }
+```
+
+#### `toGeneric`
+
+```rescript
+type t = {
+  name: string,
+  age: int
+}
+
+type t1 = %ppx_ts.toGeneric(t)
+// changed
+type t1<'a> = {
+  name: 'a
+  age: 'a
+}
+```
+
 ## Contribution
 
 1. Create a sandbox with opam

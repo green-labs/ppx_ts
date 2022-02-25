@@ -2,8 +2,6 @@
 'use strict';
 
 
-var $$Error = {};
-
 function t_keyToString(key) {
   if (key) {
     return "age";
@@ -12,9 +10,23 @@ function t_keyToString(key) {
   }
 }
 
-var value = "name";
+function t1_keyToString(key) {
+  if (key) {
+    return "lastName";
+  } else {
+    return "firstName";
+  }
+}
 
-exports.$$Error = $$Error;
+function t2_keyToString(key) {
+  if (key) {
+    return "age";
+  } else {
+    return "name";
+  }
+}
+
 exports.t_keyToString = t_keyToString;
-exports.value = value;
+exports.t1_keyToString = t1_keyToString;
+exports.t2_keyToString = t2_keyToString;
 /* No side effect */

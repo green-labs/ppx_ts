@@ -2,11 +2,20 @@
 'use strict';
 
 var Jest = require("@glennsl/bs-jest/src/jest.js");
+var View = require("../src/View.js");
 
-Jest.describe("", (function (param) {
-        return Jest.test("", (function (param) {
-                      var stringifyName = "name";
-                      return Jest.Expect.toEqual("name", Jest.Expect.expect(stringifyName));
+Jest.describe("keyOf", (function (param) {
+        Jest.test("t", (function (param) {
+                var nameTInString = View.t_keyToString(/* Name */0);
+                return Jest.Expect.toEqual("name", Jest.Expect.expect(nameTInString));
+              }));
+        Jest.test("t1", (function (param) {
+                var nameT1InString = View.t1_keyToString(/* FirstName */0);
+                return Jest.Expect.toEqual("firstName", Jest.Expect.expect(nameT1InString));
+              }));
+        return Jest.test("t2", (function (param) {
+                      var nameT2InString = View.t2_keyToString(/* Name */0);
+                      return Jest.Expect.toEqual("name", Jest.Expect.expect(nameT2InString));
                     }));
       }));
 

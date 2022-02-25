@@ -5,13 +5,6 @@ module type Error = {
   }
 }
 
-module Error: Error = {
-  type t = {
-    firstName: string,
-    lastName: string,
-  }
-}
-
 @ppx_ts.keyOf @ppx_ts.toGeneric
 type t = {
   name: string,
