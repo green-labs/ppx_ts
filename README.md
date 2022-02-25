@@ -126,12 +126,14 @@ type t_omit_name = {
 #### `keyOf`
 
 ```rescript
-type t = {
-  name: string,
-  age: int
+module Error = {
+  type t = {
+    name: string,
+    age: int
+  }
 }
 
-type t1 = %ppx_ts.keyOf(t) // type t1 = Name | Age
+type t1 = %ppx_ts.keyOf(Error.t) // type t1 = Name | Age
 ```
 
 ## Contribution

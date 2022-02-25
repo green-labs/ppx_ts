@@ -47,8 +47,8 @@ let map_structure_item mapper structure ({ pstr_desc } as structure_item) =
       in
 
       match extension with
-      | Some (KeyOf (type_name, refer_name, _payload)) -> (
-          match get_type_decl_by_name structure refer_name with
+      | Some (KeyOf (type_name, type_labels, _payload)) -> (
+          match get_type_decl_by_labels structure type_labels with
           | Some { ptype_loc; ptype_manifest; ptype_kind } ->
               let new_structure_item =
                 Str_key_of.make_structure_item type_name ptype_loc

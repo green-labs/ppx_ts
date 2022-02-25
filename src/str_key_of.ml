@@ -34,6 +34,7 @@ let make_structure_items name loc manifest kind suffix =
       decls
   | _ -> fail loc "This type is not handled by @ppx_ts.keyOf"
 
+(* keyOf extension mapper *)
 let make_structure_item name loc manifest kind =
   match (manifest, kind) with
   (* type t *)

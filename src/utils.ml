@@ -13,12 +13,12 @@ type attribute_kind =
   | Omit of string * payload
 
 type extension_kind =
-  | KeyOf of string * string * payload
-  | SetType of string * string * payload
-  | ToGeneric of string * string * payload
-  | Partial of string * string * payload
-  | Pick of string * string * payload
-  | Omit of string * string * payload
+  | KeyOf of string * string list * payload
+  | SetType of string * string list * payload
+  | ToGeneric of string * string list * payload
+  | Partial of string * string list * payload
+  | Pick of string * string list * payload
+  | Omit of string * string list * payload
 
 let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
@@ -73,45 +73,60 @@ let parse_attribute { attr_name = { Location.txt }; attr_payload } :
 let parse_extension { ptype_name; ptype_manifest } : extension_kind option =
   match ptype_manifest with
   | Some { ptyp_desc = Ptyp_extension ({ Location.txt }, payload) } ->
-      let type_name =
+      (* type identifier in extension payload *)
+      let type_labels =
         match get_expression_from_payload payload with
-        | { pexp_desc = Pexp_ident lid } -> (
-            match lid.txt with
-            | Lident name -> name
-            | _ -> fail lid.loc "Missing type identifier")
+        | { pexp_desc = Pexp_ident lid } -> Longident.flatten_exn lid.txt
         | _ -> fail Location.none "Missing type identifier"
       in
 
       if txt = mk_attr_with_suffix attribute_name suffix_key_of then
-        Some (KeyOf (ptype_name.txt, type_name, payload))
+        Some (KeyOf (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_set_type then
-        Some (SetType (ptype_name.txt, txt, payload))
+        Some (SetType (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_to_generic then
-        Some (ToGeneric (ptype_name.txt, txt, payload))
+        Some (ToGeneric (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_partial then
-        Some (Partial (ptype_name.txt, txt, payload))
+        Some (Partial (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_pick then
-        Some (Pick (ptype_name.txt, txt, payload))
+        Some (Pick (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_omit then
-        Some (Omit (ptype_name.txt, txt, payload))
+        Some (Omit (ptype_name.txt, type_labels, payload))
       else None
   | _ -> None
 
-let get_type_decl_by_name structure name =
+(* get type declaration by label inside module or top-level pstr *)
+let rec get_type_decl_by_labels structure labels =
   let matched_decls =
-    structure
-    |> List.filter_map (fun { pstr_desc } ->
-           match pstr_desc with
-           | Pstr_type (_, decls) -> (
-               let matched_decl =
-                 decls
-                 |> List.filter (fun { ptype_name = { Location.txt } } ->
-                        txt = name)
-               in
-               match matched_decl with
-               | [] -> None
-               | [ decl ] | decl :: _ -> Some decl)
-           | _ -> None)
+    match labels with
+    | [] -> fail Location.none "Can not find type declaration with given type identifier"
+    | [ label ] ->
+        structure
+        |> List.filter_map (fun { pstr_desc } ->
+               match pstr_desc with
+               | Pstr_type (_, decls) -> (
+                   let matched_decl =
+                     decls
+                     |> List.filter (fun { ptype_name = { Location.txt } } ->
+                            txt = label)
+                   in
+                   match matched_decl with
+                   | [] -> None
+                   | [ decl ] | decl :: _ -> Some decl)
+               | _ -> None)
+    | label :: labels ->
+        structure
+        |> List.filter_map (fun { pstr_desc } ->
+               match pstr_desc with
+               | Pstr_module
+                   {
+                     pmb_name;
+                     pmb_expr = { pmod_desc = Pmod_structure structure };
+                   } ->
+                   if pmb_name.txt = Some label then
+                     get_type_decl_by_labels structure labels
+                   else None
+               | _ -> None)
   in
   match matched_decls with [] -> None | [ decl ] | decl :: _ -> Some decl
 

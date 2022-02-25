@@ -1,5 +1,8 @@
 module Error = {
-  type t
+  type t = {
+    firstName: string,
+    lastName: string,
+  }
 }
 
 @ppx_ts.keyOf
@@ -13,6 +16,7 @@ type t = {
   age: int,
 }
 
-type t1 = %ppx_ts.keyOf(t)
+type t1 = %ppx_ts.keyOf(Error.t)
+type t2 = %ppx_ts.keyOf(t)
 
 let value = t_keyToString(Name)
