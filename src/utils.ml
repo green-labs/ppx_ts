@@ -96,10 +96,12 @@ let parse_extension { ptype_name; ptype_manifest } : extension_kind option =
   | _ -> None
 
 (* get type declaration by label inside module or top-level pstr *)
-let rec get_type_decl_by_labels structure labels =
+let rec get_type_decl_from_str_by_labels structure labels =
   let matched_decls =
     match labels with
-    | [] -> fail Location.none "Can not find type declaration with given type identifier"
+    | [] ->
+        fail Location.none
+          "Can not find type declaration with given type identifier"
     | [ label ] ->
         structure
         |> List.filter_map (fun { pstr_desc } ->
@@ -118,13 +120,65 @@ let rec get_type_decl_by_labels structure labels =
         structure
         |> List.filter_map (fun { pstr_desc } ->
                match pstr_desc with
+               (* module Foo = ... *)
                | Pstr_module
                    {
                      pmb_name;
                      pmb_expr = { pmod_desc = Pmod_structure structure };
                    } ->
                    if pmb_name.txt = Some label then
-                     get_type_decl_by_labels structure labels
+                     get_type_decl_from_str_by_labels structure labels
+                   else None
+               (* module Foo: Foo = ... *)
+               | Pstr_module
+                   {
+                     pmb_name;
+                     pmb_expr =
+                       {
+                         pmod_desc =
+                           Pmod_constraint
+                             ({ pmod_desc = Pmod_structure structure }, _);
+                       };
+                   } ->
+                   if pmb_name.txt = Some label then
+                     get_type_decl_from_str_by_labels structure labels
+                   else None
+               | _ -> None)
+  in
+  match matched_decls with [] -> None | [ decl ] | decl :: _ -> Some decl
+
+(* get type declaration by label inside module or top-level  *)
+let rec get_type_decl_from_sig_by_labels signature labels =
+  let matched_decls =
+    match labels with
+    | [] ->
+        fail Location.none
+          "Can not find type declaration with given type identifier"
+    | [ label ] ->
+        signature
+        |> List.filter_map (fun { psig_desc } ->
+               match psig_desc with
+               | Psig_type (_, decls) -> (
+                   let matched_decl =
+                     decls
+                     |> List.filter (fun { ptype_name = { Location.txt } } ->
+                            txt = label)
+                   in
+                   match matched_decl with
+                   | [] -> None
+                   | [ decl ] | decl :: _ -> Some decl)
+               | _ -> None)
+    | label :: labels ->
+        signature
+        |> List.filter_map (fun { psig_desc } ->
+               match psig_desc with
+               | Psig_modtype
+                   {
+                     pmtd_name;
+                     pmtd_type = Some { pmty_desc = Pmty_signature signature };
+                   } ->
+                   if pmtd_name.txt = label then
+                     get_type_decl_from_sig_by_labels signature labels
                    else None
                | _ -> None)
   in

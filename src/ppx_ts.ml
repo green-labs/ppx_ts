@@ -5,7 +5,7 @@ class mapper =
     inherit Ast_traverse.map
 
     method! signature sign =
-      sign |> List.map (Signature.map_signature_item self) |> List.concat
+      sign |> List.map (Signature.map_signature_item self sign) |> List.concat
 
     method! structure strt =
       strt |> List.map (Structure.map_structure_item self strt) |> List.concat

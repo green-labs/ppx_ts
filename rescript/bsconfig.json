@@ -20,7 +20,7 @@
   "ppx-flags": ["../ppx"],
   "warnings": {
     "error": true,
-    "number": "-48"
+    "number": "-32-34-48-60"
   },
   "generators": [],
   "bsc-flags": ["-bs-super-errors"]
