@@ -72,6 +72,16 @@ let map_structure_item mapper structure ({ pstr_desc } as structure_item) =
               in
               [ mapper#structure_item new_structure_item ]
           | _ -> fail Location.none "Can not find the matching type")
+      | Some (SetTypeExceptBool (type_name, type_labels, payload, attributes))
+        -> (
+          match get_type_decl_from_str_by_labels structure type_labels with
+          | Some { ptype_loc; ptype_manifest; ptype_kind } ->
+              let new_structure_item =
+                Str_set_type.make_new_structure_item ~except_bool:true type_name
+                  ptype_loc ptype_manifest ptype_kind payload attributes
+              in
+              [ mapper#structure_item new_structure_item ]
+          | _ -> fail Location.none "Can not find the matching type")
       | Some (ToGeneric (type_name, type_labels, _)) -> (
           match get_type_decl_from_str_by_labels structure type_labels with
           | Some { ptype_loc; ptype_manifest; ptype_kind } ->

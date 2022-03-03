@@ -29,7 +29,8 @@ let make_signature_items name loc manifest kind suffix payload =
   | _ -> fail loc "This type is not handled by ppx_ts"
 
 (* setType extension mapper *)
-let make_new_signature_item name loc manifest kind payload attributes =
+let make_new_signature_item ?(except_bool = false) name loc manifest kind
+    payload attributes =
   match (manifest, kind, payload) with
   | None, Ptype_abstract, _ -> fail loc "Can't handle the unspecified type"
   | ( None,
@@ -55,6 +56,8 @@ let make_new_signature_item name loc manifest kind payload attributes =
         [
           Type.mk (mkloc name loc) ~priv:Public ~attrs:attributes
             ~kind:
-              (Ptype_record (make_label_decls_with_core_type decls new_pld_type));
+              (Ptype_record
+                 (make_label_decls_with_core_type decls ~except_bool
+                    new_pld_type));
         ]
   | _ -> fail loc "This type is not handled by @ppx_ts.setType"

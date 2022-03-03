@@ -14,7 +14,8 @@ type attribute_kind =
 
 type extension_kind =
   | KeyOf of string * string list * payload
-  | SetType of string * string list * payload  * attributes
+  | SetType of string * string list * payload * attributes
+  | SetTypeExceptBool of string * string list * payload * attributes
   | ToGeneric of string * string list * payload
   | Partial of string * string list * payload
   | Pick of string * string list * payload
@@ -22,6 +23,7 @@ type extension_kind =
 
 let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
+let suffix_set_type_except_bool = "setTypeExceptBool"
 let suffix_to_generic = "toGeneric"
 let suffix_partial = "partial"
 let suffix_pick = "pick"
@@ -92,6 +94,12 @@ let parse_extension { ptype_name; ptype_manifest; ptype_attributes } :
         Some (KeyOf (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_set_type then
         Some (SetType (ptype_name.txt, type_labels, payload, ptype_attributes))
+      else if
+        txt = mk_attr_with_suffix attribute_name suffix_set_type_except_bool
+      then
+        Some
+          (SetTypeExceptBool
+             (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_to_generic then
         Some (ToGeneric (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_partial then
@@ -206,9 +214,18 @@ let make_match_case labels =
            (Exp.constant (Const.string key)))
 
 (* make label_declaration with new type constructor using lid *)
-let make_label_decls_with_core_type ?(is_option = false) decls core_type =
+let make_label_decls_with_core_type ?(except_bool = false) ?(is_option = false)
+    decls core_type =
   decls
-  |> List.map (fun { pld_name; pld_loc } ->
+  |> List.map (fun { pld_name; pld_loc; pld_type } ->
+         let core_type =
+           match (except_bool, pld_type) with
+           | ( true,
+               { ptyp_desc = Ptyp_constr ({ Location.txt = Lident txt }, _) } )
+             -> (
+               match txt with "bool" -> pld_type | _ -> core_type)
+           | _ -> core_type
+         in
          Type.field ~loc:pld_loc pld_name
            (match is_option with
            | true -> Typ.constr (lid "option") [ core_type ]

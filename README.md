@@ -176,6 +176,25 @@ type t1 = {
 }
 ```
 
+#### `setTypeExceptBool`
+
+```rescript
+type t = {
+  name: string,
+  age: int,
+  isKorean: bool
+}
+
+@spice // attributes are available
+type t1 = %ppx_ts.setTypeExceptBool((t, string))
+// changed
+type t1 = {
+  name: string,
+  age: string,
+  isKorean: bool
+}
+```
+
 ## Contribution
 
 1. Create a sandbox with opam
