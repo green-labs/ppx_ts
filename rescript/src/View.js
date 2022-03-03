@@ -5,10 +5,14 @@
 var Err = {};
 
 function t_keyToString(key) {
-  if (key) {
-    return "age";
-  } else {
-    return "name";
+  switch (key) {
+    case /* Name */0 :
+        return "name";
+    case /* Age */1 :
+        return "age";
+    case /* IsKorean */2 :
+        return "isKorean";
+    
   }
 }
 
@@ -21,10 +25,14 @@ function t1_keyToString(key) {
 }
 
 function t2_keyToString(key) {
-  if (key) {
-    return "age";
-  } else {
-    return "name";
+  switch (key) {
+    case /* Name */0 :
+        return "name";
+    case /* Age */1 :
+        return "age";
+    case /* IsKorean */2 :
+        return "isKorean";
+    
   }
 }
 

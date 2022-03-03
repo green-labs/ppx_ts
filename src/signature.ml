@@ -72,6 +72,16 @@ let map_signature_item mapper signature ({ psig_desc } as signature_item) =
               in
               [ mapper#signature_item new_signature_item ]
           | _ -> fail Location.none "Can not find the matching type")
+      | Some (SetTypeExceptBool (type_name, type_labels, payload, attributes))
+        -> (
+          match get_type_decl_from_sig_by_labels signature type_labels with
+          | Some { ptype_loc; ptype_manifest; ptype_kind } ->
+              let new_signature_item =
+                Sig_set_type.make_new_signature_item ~except_bool:true type_name
+                  ptype_loc ptype_manifest ptype_kind payload attributes
+              in
+              [ mapper#signature_item new_signature_item ]
+          | _ -> fail Location.none "Can not find the matching type")
       | Some (ToGeneric (type_name, type_labels, _)) -> (
           match get_type_decl_from_sig_by_labels signature type_labels with
           | Some { ptype_loc; ptype_manifest; ptype_kind } ->
