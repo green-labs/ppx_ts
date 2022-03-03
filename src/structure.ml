@@ -20,8 +20,8 @@ let map_type_decl decl =
              Str_key_of.make_structure_items type_name ptype_loc ptype_manifest
                ptype_kind suffix
          | Some (SetType (suffix, payload)) ->
-             Str_set_type.make_structure_item type_name ptype_loc ptype_manifest
-               ptype_kind suffix payload
+             Str_set_type.make_structure_items type_name ptype_loc
+               ptype_manifest ptype_kind suffix payload
          | Some (ToGeneric (suffix, _)) ->
              Str_to_generic.make_structure_items type_name ptype_loc
                ptype_manifest ptype_kind suffix
@@ -62,6 +62,15 @@ let map_structure_item mapper structure ({ pstr_desc } as structure_item) =
                 mapper#structure_item new_structure_item;
                 to_string_structure_item;
               ]
+          | _ -> fail Location.none "Can not find the matching type")
+      | Some (SetType (type_name, type_labels, payload, attributes)) -> (
+          match get_type_decl_from_str_by_labels structure type_labels with
+          | Some { ptype_loc; ptype_manifest; ptype_kind } ->
+              let new_structure_item =
+                Str_set_type.make_new_structure_item type_name ptype_loc
+                  ptype_manifest ptype_kind payload attributes
+              in
+              [ mapper#structure_item new_structure_item ]
           | _ -> fail Location.none "Can not find the matching type")
       | Some (ToGeneric (type_name, type_labels, _)) -> (
           match get_type_decl_from_str_by_labels structure type_labels with

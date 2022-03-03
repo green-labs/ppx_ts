@@ -2,6 +2,8 @@
 'use strict';
 
 
+var Err = {};
+
 function t_keyToString(key) {
   if (key) {
     return "age";
@@ -26,6 +28,7 @@ function t2_keyToString(key) {
   }
 }
 
+exports.Err = Err;
 exports.t_keyToString = t_keyToString;
 exports.t1_keyToString = t1_keyToString;
 exports.t2_keyToString = t2_keyToString;

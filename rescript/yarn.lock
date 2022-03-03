@@ -301,6 +301,11 @@
   dependencies:
     jest "^26.5.2"
 
+"@greenlabs/ppx-spice@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@greenlabs/ppx-spice/-/ppx-spice-0.1.6.tgz#1d4ac0ecbbe14af99eb963656b06e5491b601953"
+  integrity sha512-koBopd6fn60rplbSibtkS4MAqbo3OQA909dI6b5/T4PKWBYZWUZc90OuAwPEUwRDopcvsa+KQPPq8exh3t09PA==
+
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@istanbuljs/load-nyc-config/-/load-nyc-config-1.1.0.tgz#fd3db1d59ecf7cf121e80650bb86712f9b55eced"
