@@ -14,5 +14,8 @@
     "res:watch": "rescript build -w",
     "test": "jest",
     "test:watch": "jest --watchAll"
+  },
+  "dependencies": {
+    "@greenlabs/ppx-spice": "^0.1.6"
   }
 }

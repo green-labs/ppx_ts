@@ -15,9 +15,9 @@
       "in-source": true
     }
   ],
-  "bs-dependencies": [],
+  "bs-dependencies": ["@greenlabs/ppx-spice"],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
-  "ppx-flags": ["../ppx"],
+  "ppx-flags": ["../ppx", "@greenlabs/ppx-spice/ppx"],
   "warnings": {
     "error": true,
     "number": "-32-34-48-60"

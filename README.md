@@ -159,6 +159,23 @@ type t1<'a> = {
 }
 ```
 
+#### `setType`
+
+```rescript
+type t = {
+  name: string,
+  age: int
+}
+
+@spice // attributes are available
+type t1 = %ppx_ts.setType((t, string))
+// changed
+type t1 = {
+  name: string
+  age: string
+}
+```
+
 ## Contribution
 
 1. Create a sandbox with opam

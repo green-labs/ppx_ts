@@ -14,7 +14,7 @@ type attribute_kind =
 
 type extension_kind =
   | KeyOf of string * string list * payload
-  | SetType of string * string list * payload
+  | SetType of string * string list * payload  * attributes
   | ToGeneric of string * string list * payload
   | Partial of string * string list * payload
   | Pick of string * string list * payload
@@ -70,20 +70,28 @@ let parse_attribute { attr_name = { Location.txt }; attr_payload } :
     Some (Omit (suffix_omit, attr_payload))
   else None
 
-let parse_extension { ptype_name; ptype_manifest } : extension_kind option =
+let parse_extension { ptype_name; ptype_manifest; ptype_attributes } :
+    extension_kind option =
   match ptype_manifest with
   | Some { ptyp_desc = Ptyp_extension ({ Location.txt }, payload) } ->
       (* type identifier in extension payload *)
       let type_labels =
         match get_expression_from_payload payload with
         | { pexp_desc = Pexp_ident lid } -> Longident.flatten_exn lid.txt
+        (* %ppx_ts.setType(t, string) *)
+        | {
+         pexp_desc =
+           Pexp_tuple
+             [ { pexp_desc = Pexp_ident lid }; { pexp_desc = Pexp_ident _ } ];
+        } ->
+            Longident.flatten_exn lid.txt
         | _ -> fail Location.none "Missing type identifier"
       in
 
       if txt = mk_attr_with_suffix attribute_name suffix_key_of then
         Some (KeyOf (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_set_type then
-        Some (SetType (ptype_name.txt, type_labels, payload))
+        Some (SetType (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_to_generic then
         Some (ToGeneric (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_partial then
