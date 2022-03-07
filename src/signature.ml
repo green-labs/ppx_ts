@@ -26,7 +26,7 @@ let map_type_decl decl =
              Sig_to_generic.make_signature_items type_name ptype_loc
                ptype_manifest ptype_kind suffix
          | Some (Partial (suffix, _)) ->
-             Sig_partial.make_signature_item type_name ptype_loc ptype_manifest
+             Sig_partial.make_signature_items type_name ptype_loc ptype_manifest
                ptype_kind suffix
          | Some (Pick (suffix, payload)) ->
              Sig_pick.make_signature_item type_name ptype_loc ptype_manifest
@@ -88,6 +88,15 @@ let map_signature_item mapper signature ({ psig_desc } as signature_item) =
               let new_signature_item =
                 Sig_to_generic.make_signature_item type_name ptype_loc
                   ptype_manifest ptype_kind
+              in
+              [ mapper#signature_item new_signature_item ]
+          | _ -> fail Location.none "Can not find the matching type")
+      | Some (Partial (type_name, type_labels, _, attributes)) -> (
+          match get_type_decl_from_sig_by_labels signature type_labels with
+          | Some { ptype_loc; ptype_manifest; ptype_kind } ->
+              let new_signature_item =
+                Sig_partial.make_signature_item type_name ptype_loc
+                  ptype_manifest ptype_kind attributes
               in
               [ mapper#signature_item new_signature_item ]
           | _ -> fail Location.none "Can not find the matching type")
