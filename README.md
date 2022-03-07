@@ -143,22 +143,6 @@ let t1_keyToString = key =>
   }
 ```
 
-#### `toGeneric`
-
-```rescript
-type t = {
-  name: string,
-  age: int
-}
-
-type t1 = %ppx_ts.toGeneric(t)
-// changed
-type t1<'a> = {
-  name: 'a
-  age: 'a
-}
-```
-
 #### `setType`
 
 ```rescript
@@ -192,6 +176,41 @@ type t1 = {
   name: string,
   age: string,
   isKorean: bool
+}
+```
+
+#### `toGeneric`
+
+```rescript
+type t = {
+  name: string,
+  age: int
+}
+
+type t1 = %ppx_ts.toGeneric(t)
+// generated
+type t1<'a> = {
+  name: 'a
+  age: 'a
+}
+```
+
+#### `partial`
+
+```rescript
+type t = {
+  name: string,
+  age: int,
+  isKorean: bool
+}
+
+@spice // attributes are available
+type t1 = %ppx_ts.partial(t)
+// generated
+type t1 = {
+  name: option<string>,
+  age: option<int>,
+  isKorean: option<bool>
 }
 ```
 

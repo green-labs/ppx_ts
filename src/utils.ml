@@ -17,7 +17,7 @@ type extension_kind =
   | SetType of string * string list * payload * attributes
   | SetTypeExceptBool of string * string list * payload * attributes
   | ToGeneric of string * string list * payload
-  | Partial of string * string list * payload
+  | Partial of string * string list * payload * attributes
   | Pick of string * string list * payload
   | Omit of string * string list * payload
 
@@ -103,7 +103,7 @@ let parse_extension { ptype_name; ptype_manifest; ptype_attributes } :
       else if txt = mk_attr_with_suffix attribute_name suffix_to_generic then
         Some (ToGeneric (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_partial then
-        Some (Partial (ptype_name.txt, type_labels, payload))
+        Some (Partial (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_pick then
         Some (Pick (ptype_name.txt, type_labels, payload))
       else if txt = mk_attr_with_suffix attribute_name suffix_omit then

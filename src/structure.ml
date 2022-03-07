@@ -26,7 +26,7 @@ let map_type_decl decl =
              Str_to_generic.make_structure_items type_name ptype_loc
                ptype_manifest ptype_kind suffix
          | Some (Partial (suffix, _)) ->
-             Str_partial.make_structure_item type_name ptype_loc ptype_manifest
+             Str_partial.make_structure_items type_name ptype_loc ptype_manifest
                ptype_kind suffix
          | Some (Pick (suffix, payload)) ->
              Str_pick.make_structure_item type_name ptype_loc ptype_manifest
@@ -88,6 +88,15 @@ let map_structure_item mapper structure ({ pstr_desc } as structure_item) =
               let new_structure_item =
                 Str_to_generic.make_structure_item type_name ptype_loc
                   ptype_manifest ptype_kind
+              in
+              [ mapper#structure_item new_structure_item ]
+          | _ -> fail Location.none "Can not find the matching type")
+      | Some (Partial (type_name, type_labels, _, attributes)) -> (
+          match get_type_decl_from_str_by_labels structure type_labels with
+          | Some { ptype_loc; ptype_manifest; ptype_kind } ->
+              let new_structure_item =
+                Str_partial.make_structure_item type_name ptype_loc
+                  ptype_manifest ptype_kind attributes
               in
               [ mapper#structure_item new_structure_item ]
           | _ -> fail Location.none "Can not find the matching type")
