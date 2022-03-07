@@ -21,7 +21,7 @@ let make_signature_items name loc manifest kind suffix =
         ]
       in
       decls
-  | _ -> fail loc "This type is not handled by @ppx_ts.toGeneric"
+  | _ -> fail loc "This type is not handled by @ppx_ts.partial"
 
 (* partial extension mapper *)
 let make_signature_item name loc manifest kind attributes =
@@ -34,4 +34,4 @@ let make_signature_item name loc manifest kind attributes =
           Type.mk (mkloc name loc) ~priv:Public ~attrs:attributes
             ~kind:(Ptype_record (make_label_decls ~is_option:true decls));
         ]
-  | _ -> fail loc "This type is not handled by @ppx_ts.toGeneric"
+  | _ -> fail loc "This type is not handled by @ppx_ts.partial"
