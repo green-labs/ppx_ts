@@ -133,6 +133,7 @@ module Error = {
   }
 }
 
+@spice // attributes are available
 type t1 = %ppx_ts.keyOf(Error.t) // type t1 = Name | Age
 
 // automatically generated
@@ -187,6 +188,7 @@ type t = {
   age: int
 }
 
+@spice // attributes are available
 type t1 = %ppx_ts.toGeneric(t)
 // generated
 type t1<'a> = {

@@ -13,13 +13,13 @@ type attribute_kind =
   | Omit of string * payload
 
 type extension_kind =
-  | KeyOf of string * string list * payload
+  | KeyOf of string * string list * payload * attributes
   | SetType of string * string list * payload * attributes
   | SetTypeExceptBool of string * string list * payload * attributes
-  | ToGeneric of string * string list * payload
+  | ToGeneric of string * string list * payload * attributes
   | Partial of string * string list * payload * attributes
-  | Pick of string * string list * payload
-  | Omit of string * string list * payload
+  | Pick of string * string list * payload * attributes
+  | Omit of string * string list * payload * attributes
 
 let suffix_key_of = "keyOf"
 let suffix_set_type = "setType"
@@ -91,7 +91,7 @@ let parse_extension { ptype_name; ptype_manifest; ptype_attributes } :
       in
 
       if txt = mk_attr_with_suffix attribute_name suffix_key_of then
-        Some (KeyOf (ptype_name.txt, type_labels, payload))
+        Some (KeyOf (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_set_type then
         Some (SetType (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if
@@ -101,13 +101,14 @@ let parse_extension { ptype_name; ptype_manifest; ptype_attributes } :
           (SetTypeExceptBool
              (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_to_generic then
-        Some (ToGeneric (ptype_name.txt, type_labels, payload))
+        Some
+          (ToGeneric (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_partial then
         Some (Partial (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_pick then
-        Some (Pick (ptype_name.txt, type_labels, payload))
+        Some (Pick (ptype_name.txt, type_labels, payload, ptype_attributes))
       else if txt = mk_attr_with_suffix attribute_name suffix_omit then
-        Some (Omit (ptype_name.txt, type_labels, payload))
+        Some (Omit (ptype_name.txt, type_labels, payload, ptype_attributes))
       else None
   | _ -> None
 

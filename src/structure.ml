@@ -47,12 +47,12 @@ let map_structure_item mapper structure ({ pstr_desc } as structure_item) =
       in
 
       match extension with
-      | Some (KeyOf (type_name, type_labels, _)) -> (
+      | Some (KeyOf (type_name, type_labels, _, attributes)) -> (
           match get_type_decl_from_str_by_labels structure type_labels with
           | Some { ptype_loc; ptype_manifest; ptype_kind } ->
               let new_structure_item =
                 Str_key_of.make_new_structure_item type_name ptype_loc
-                  ptype_manifest ptype_kind
+                  ptype_manifest ptype_kind attributes
               in
               let to_string_structure_item =
                 Str_key_of.make_structure_item type_name ptype_loc
@@ -82,12 +82,12 @@ let map_structure_item mapper structure ({ pstr_desc } as structure_item) =
               in
               [ mapper#structure_item new_structure_item ]
           | _ -> fail Location.none "Can not find the matching type")
-      | Some (ToGeneric (type_name, type_labels, _)) -> (
+      | Some (ToGeneric (type_name, type_labels, _, attributes)) -> (
           match get_type_decl_from_str_by_labels structure type_labels with
           | Some { ptype_loc; ptype_manifest; ptype_kind } ->
               let new_structure_item =
                 Str_to_generic.make_structure_item type_name ptype_loc
-                  ptype_manifest ptype_kind
+                  ptype_manifest ptype_kind attributes
               in
               [ mapper#structure_item new_structure_item ]
           | _ -> fail Location.none "Can not find the matching type")

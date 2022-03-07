@@ -28,7 +28,7 @@ let make_signature_items name loc manifest kind suffix =
   | _ -> fail loc "This type is not handled by ppx_ts"
 
 (* toGeneric extension mapper *)
-let make_signature_item name loc manifest kind =
+let make_signature_item name loc manifest kind attributes =
   match (manifest, kind) with
   | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
   | None, Ptype_record decls ->
@@ -36,7 +36,7 @@ let make_signature_item name loc manifest kind =
       let type_param = Typ.var "a" in
       Sig.type_ Recursive
         [
-          Type.mk (mkloc name loc) ~priv:Public
+          Type.mk (mkloc name loc) ~priv:Public ~attrs:attributes
             ~params:[ (type_param, (NoVariance, NoInjectivity)) ]
             ~kind:
               (Ptype_record (make_label_decls_with_core_type decls type_param));
