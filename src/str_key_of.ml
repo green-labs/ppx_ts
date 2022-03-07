@@ -35,7 +35,7 @@ let make_structure_items name loc manifest kind suffix =
   | _ -> fail loc "This type is not handled by @ppx_ts.keyOf"
 
 (* keyOf extension mapper *)
-let make_new_structure_item name loc manifest kind =
+let make_new_structure_item name loc manifest kind attributes =
   match (manifest, kind) with
   (* type t *)
   | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
@@ -43,7 +43,7 @@ let make_new_structure_item name loc manifest kind =
       let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
       Str.type_ Recursive
         [
-          Type.mk (mkloc name loc) ~priv:Public
+          Type.mk (mkloc name loc) ~priv:Public ~attrs:attributes
             ~kind:(Ptype_variant (make_const_decls keys loc));
         ]
   | _ -> fail loc "This type is not handled by %ppx_ts.keyOf"

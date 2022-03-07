@@ -29,18 +29,19 @@ let make_signature_items name loc manifest kind suffix =
   | _ -> fail loc "This type is not handled by ppx_ts"
 
 (* keyOf extension mapper *)
-let make_new_signature_item name loc manifest kind =
+let make_new_signature_item name loc manifest kind attributes =
   match (manifest, kind) with
   | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
   | None, Ptype_record decls ->
       let keys = decls |> List.map (fun { pld_name = { txt } } -> txt) in
       Sig.type_ Recursive
         [
-          Type.mk (mkloc name loc)
+          Type.mk (mkloc name loc) ~attrs:attributes
             ~kind:(Ptype_variant (make_const_decls keys loc));
         ]
   | _ -> fail loc "This type is not handled by ppx_ts"
 
+(* keyOf toString fn *)
 let make_signature_item name loc manifest kind =
   match (manifest, kind) with
   | None, Ptype_abstract -> fail loc "Can't handle the unspecified type"
