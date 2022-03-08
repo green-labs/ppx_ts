@@ -2,7 +2,7 @@
 (name ppx_ts)
 (version 0.1.6)
 
-(generate_opam_files true)
+(generate_opam_files false)
 
 (source (github green-labs/ppx_ts))
 (license MIT)
