@@ -16,7 +16,7 @@
  (depends
   (ocaml (>= 4.12.1))
   (dune (>= 3.0))
-  ppxlib
+  (ppxlib (>= 0.22.0))
   ppx_inline_test
   ppx_expect
   ppx_deriving))
