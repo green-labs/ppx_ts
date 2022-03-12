@@ -20,7 +20,7 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
-      - run: ocaml --version
+      - run: opam --version
 
       - name: Install deps
         run: opam install . --deps-only --with-test
