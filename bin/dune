@@ -1,5 +1,7 @@
 (executable
  (package ppx_ts)
  (name bin)
+ (modes
+  (byte exe))
  (public_name ppx_ts)
  (libraries ppx_ts))
