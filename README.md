@@ -12,7 +12,7 @@ yarn add -D @greenlabs/ppx-ts
 // bsconfig.json
 "ppx-flags": [
   ...,
-  "@greenlabs/ppx_ts/ppx"
+  "@greenlabs/ppx-ts/ppx"
 ],
 ```
 
