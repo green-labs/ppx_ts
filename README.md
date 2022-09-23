@@ -5,7 +5,7 @@
 ## Install
 
 ```rescript
-yarn add -D @greenlabs/ppx_ts
+yarn add -D @greenlabs/ppx-ts
 ```
 
 ```rescript
