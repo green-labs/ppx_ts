@@ -3,7 +3,7 @@ name: Build Windows
 on: [workflow_dispatch]
 
 jobs:
-  build_macos:
+  build_windows:
     name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
