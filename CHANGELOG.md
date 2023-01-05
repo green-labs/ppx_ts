@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# 0.1.9
+
+- Build the executable with static linking for Linux with musl
+
 # 0.1.8
 
 - Build the executable with static linking for Linux
