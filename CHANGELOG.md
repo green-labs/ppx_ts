@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# 0.1.10
+
+- Add `@ppx_ts.toArray` feature
+
 # 0.1.9
 
 - Build the executable with static linking for Linux with musl

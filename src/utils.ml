@@ -11,6 +11,7 @@ type attribute_kind =
   | Partial of string * payload
   | Pick of string * payload
   | Omit of string * payload
+  | ToArray of string * payload
 
 type extension_kind =
   | KeyOf of string * string list * payload * attributes
@@ -29,6 +30,7 @@ let suffix_partial = "partial"
 let suffix_pick = "pick"
 let suffix_omit = "omit"
 let suffix_key_to_string = "keyToString"
+let suffix_to_array = "toArray"
 
 (* make attribute name to suffix string *)
 let mk_attr_with_suffix attr_name suffix = attr_name ^ "." ^ suffix
@@ -70,6 +72,8 @@ let parse_attribute { attr_name = { Location.txt }; attr_payload } :
     Some (Pick (suffix_pick, attr_payload))
   else if txt = mk_attr_with_suffix attribute_name suffix_omit then
     Some (Omit (suffix_omit, attr_payload))
+  else if txt = mk_attr_with_suffix attribute_name suffix_to_array then
+    Some (ToArray (suffix_to_array, attr_payload))
   else None
 
 let parse_extension { ptype_name; ptype_manifest; ptype_attributes } :

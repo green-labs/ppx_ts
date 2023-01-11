@@ -121,6 +121,16 @@ type t_omit_name = {
 }
 ```
 
+#### `toArray`
+
+```rescript
+@ppx_ts.toArray
+type t = Name | Age
+
+// automatically generated
+let t_toArray = ["Name", "Age"]
+```
+
 ### Extension `%`
 
 #### `keyOf`

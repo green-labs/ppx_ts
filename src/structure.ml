@@ -34,6 +34,9 @@ let map_type_decl decl =
          | Some (Omit (suffix, payload)) ->
              Str_omit.make_structure_item type_name ptype_loc ptype_manifest
                ptype_kind suffix payload
+         | Some (ToArray (suffix, _)) ->
+             Str_to_array.make_structure_items type_name ptype_loc
+               ptype_manifest ptype_kind suffix
          | None -> [])
   |> List.concat
 

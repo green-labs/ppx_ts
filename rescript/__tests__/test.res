@@ -18,3 +18,20 @@ describe("keyOf", _ => {
     expect(nameT2InString) |> toEqual("name")
   })
 })
+
+describe("toArray", _ => {
+  test("check array length", _ => {
+    let length = View.t8_toArray->Array.length
+    expect(length) |> toEqual(2)
+  })
+
+  test("The first item is 'Name'", _ => {
+    let first = View.t8_toArray->Array.unsafe_get(0)
+    expect(first) |> toEqual("Name")
+  })
+
+  test("The second item is 'Age'", _ => {
+    let first = View.t8_toArray->Array.unsafe_get(1)
+    expect(first) |> toEqual("Age")
+  })
+})
