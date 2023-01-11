@@ -1,5 +1,9 @@
 # CHANGELOG
 
+# 0.1.11
+
+- Add `@ppx_ts.toArray` feature for polymorphic variants
+
 # 0.1.10
 
 - Add `@ppx_ts.toArray` feature
