@@ -34,6 +34,9 @@ let map_type_decl decl =
          | Some (Omit (suffix, payload)) ->
              Sig_omit.make_signature_item type_name ptype_loc ptype_manifest
                ptype_kind suffix payload
+         | Some (ToArray (suffix, _)) ->
+             Sig_to_array.make_signature_items type_name ptype_loc
+               ptype_manifest ptype_kind suffix
          | None -> [])
   |> List.concat
 

@@ -19,4 +19,19 @@ Jest.describe("keyOf", (function (param) {
                     }));
       }));
 
+Jest.describe("toArray", (function (param) {
+        Jest.test("check array length", (function (param) {
+                var length = View.t8_toArray.length;
+                return Jest.Expect.toEqual(2, Jest.Expect.expect(length));
+              }));
+        Jest.test("The first item is 'Name'", (function (param) {
+                var first = View.t8_toArray[0];
+                return Jest.Expect.toEqual("Name", Jest.Expect.expect(first));
+              }));
+        return Jest.test("The second item is 'Age'", (function (param) {
+                      var first = View.t8_toArray[1];
+                      return Jest.Expect.toEqual("Age", Jest.Expect.expect(first));
+                    }));
+      }));
+
 /*  Not a pure module */

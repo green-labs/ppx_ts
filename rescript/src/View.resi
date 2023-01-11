@@ -8,11 +8,11 @@ module type Err = {
 
 module Err: Err
 
-@ppx_ts.keyOf
+@ppx_ts.keyOf @ppx_ts.setType(string)
 type t = {
   name: string,
   age: int,
-  isKorean: bool
+  isKorean: bool,
 }
 
 @spice
@@ -25,7 +25,8 @@ type t3 = %ppx_ts.toGeneric(Err.err)
 type t4 = %ppx_ts.toGeneric(t)
 @spice
 type t5 = %ppx_ts.setType((t, Err.err))
-@spice
 type t6 = %ppx_ts.setTypeExceptBool((t, string))
-@spice
 type t7 = %ppx_ts.partial(t)
+
+@ppx_ts.toArray
+type t8 = Name(string) | Age(int)
