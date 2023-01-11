@@ -415,6 +415,11 @@ var t8_toArray = [
   "Age"
 ];
 
+var t9_toArray = [
+  "Name",
+  "Age"
+];
+
 exports.Err = Err;
 exports.t_keyToString = t_keyToString;
 exports.t1_encode = t1_encode;
@@ -430,4 +435,5 @@ exports.t4_decode = t4_decode;
 exports.t5_encode = t5_encode;
 exports.t5_decode = t5_decode;
 exports.t8_toArray = t8_toArray;
+exports.t9_toArray = t9_toArray;
 /* No side effect */
