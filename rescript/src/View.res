@@ -36,3 +36,6 @@ type t7 = %ppx_ts.partial(t)
 
 @ppx_ts.toArray
 type t8 = Name(string) | Age(int)
+
+@ppx_ts.toArray
+type t9 = [#Name(string) | #Age(int)]

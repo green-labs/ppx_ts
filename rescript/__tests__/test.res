@@ -35,3 +35,20 @@ describe("toArray", _ => {
     expect(first) |> toEqual("Age")
   })
 })
+
+describe("Polyvari toArray", _ => {
+  test("check array length", _ => {
+    let length = View.t9_toArray->Array.length
+    expect(length) |> toEqual(2)
+  })
+
+  test("The first item is 'Name'", _ => {
+    let first = View.t9_toArray->Array.unsafe_get(0)
+    expect(first) |> toEqual("Name")
+  })
+
+  test("The second item is 'Age'", _ => {
+    let first = View.t9_toArray->Array.unsafe_get(1)
+    expect(first) |> toEqual("Age")
+  })
+})
